@@ -34,7 +34,6 @@ php artisan vendor:publish --tag=openobserve-config
 `.env`에 OpenObserve 연결 정보를 추가합니다:
 
 ```env
-OPENOBSERVE_ENABLED=true
 OPENOBSERVE_URL=http://localhost:5080
 OPENOBSERVE_ORGANIZATION=default
 OPENOBSERVE_STREAM=laravel-logs
@@ -46,7 +45,6 @@ OPENOBSERVE_PASSWORD=your-password
 
 | 옵션 | 환경변수 | 기본값 |
 |------|---------|--------|
-| `enabled` | `OPENOBSERVE_ENABLED` | `false` |
 | `url` | `OPENOBSERVE_URL` | `http://localhost:5080` |
 | `organization` | `OPENOBSERVE_ORGANIZATION` | `default` |
 | `stream` | `OPENOBSERVE_STREAM` | `default` |
@@ -79,8 +77,6 @@ OPENOBSERVE_PASSWORD=your-password
     ],
 ],
 ```
-
-`OPENOBSERVE_ENABLED=false`일 때는 채널이 `NullHandler`로 동작하므로, 비프로덕션 환경에서도 안전하게 연결해 둘 수 있습니다.
 
 `.env`에서 기본 로그 채널을 지정합니다:
 

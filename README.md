@@ -36,7 +36,6 @@ php artisan vendor:publish --tag=openobserve-config
 Add OpenObserve connection details to your `.env` file:
 
 ```env
-OPENOBSERVE_ENABLED=true
 OPENOBSERVE_URL=http://localhost:5080
 OPENOBSERVE_ORGANIZATION=default
 OPENOBSERVE_STREAM=laravel-logs
@@ -48,7 +47,6 @@ OPENOBSERVE_PASSWORD=your-password
 
 | Option | Env Variable | Default |
 |--------|-------------|---------|
-| `enabled` | `OPENOBSERVE_ENABLED` | `false` |
 | `url` | `OPENOBSERVE_URL` | `http://localhost:5080` |
 | `organization` | `OPENOBSERVE_ORGANIZATION` | `default` |
 | `stream` | `OPENOBSERVE_STREAM` | `default` |
@@ -82,8 +80,6 @@ Add the OpenObserve channel to your `config/logging.php`:
     ],
 ],
 ```
-
-When `OPENOBSERVE_ENABLED=false`, the channel falls back to a `NullHandler`, so it is safe to keep wired up in non-production environments.
 
 Set the default log channel in your `.env` file:
 

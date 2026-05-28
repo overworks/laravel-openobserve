@@ -22,6 +22,6 @@ test('config has all required keys', function () {
     $config = config('openobserve');
 
     expect($config)->toBeArray()
-        ->toHaveKeys(['enabled', 'url', 'organization', 'stream', 'auth', 'timeout', 'ssl_verify'])
+        ->toHaveKeys(['url', 'organization', 'stream', 'auth', 'timeout', 'ssl_verify'])
         ->and($config['auth'])->toHaveKeys(['email', 'password']);
 });

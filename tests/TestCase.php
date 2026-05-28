@@ -24,7 +24,6 @@ abstract class TestCase extends BaseTestCase
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('openobserve.enabled', env('OPENOBSERVE_ENABLED', true));
         $app['config']->set('openobserve.url', env('OPENOBSERVE_URL', 'http://localhost:5080'));
         $app['config']->set('openobserve.organization', env('OPENOBSERVE_ORGANIZATION', 'default'));
         $app['config']->set('openobserve.stream', env('OPENOBSERVE_STREAM', 'default'));
