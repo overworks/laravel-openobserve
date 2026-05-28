@@ -4,18 +4,15 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/minhyung/laravel-openobserve.svg?style=flat-square)](https://packagist.org/packages/minhyung/laravel-openobserve)
 [![Total Downloads](https://img.shields.io/packagist/dt/minhyung/laravel-openobserve.svg?style=flat-square)](https://packagist.org/packages/minhyung/laravel-openobserve)
 
-A Laravel package for integrating with [OpenObserve](https://openobserve.ai). Send your logs to OpenObserve for centralized log management and monitoring.
+Laravel adapter for [minhyung/openobserve](https://github.com/overworks/php-openobserve), the PHP client for [OpenObserve](https://openobserve.ai).
+
+This package provides:
+
+- A configured `Minhyung\OpenObserve\Client` instance bound in the container
+- A custom Laravel log channel driver that ships logs through OpenObserve's Monolog handler
+- An `openobserve:test` Artisan command for connection checks
 
 **[한국어 문서](README.ko.md)**
-
-## Features
-
-- Seamless integration with Laravel's logging system
-- Efficient log transmission via batch processing
-- Configurable additional fields on all log entries
-- Direct API access through Facade
-- Automatic exception information capture (class, message, code, file, line, trace)
-- Artisan command for connection testing
 
 ## Requirements
 
@@ -23,8 +20,6 @@ A Laravel package for integrating with [OpenObserve](https://openobserve.ai). Se
 - Laravel 11.x or 12.x
 
 ## Installation
-
-Install the package via Composer:
 
 ```bash
 composer require minhyung/laravel-openobserve
@@ -49,7 +44,7 @@ OPENOBSERVE_EMAIL=your-email@example.com
 OPENOBSERVE_PASSWORD=your-password
 ```
 
-### All Configuration Options
+### Configuration Options
 
 | Option | Env Variable | Default |
 |--------|-------------|---------|
@@ -59,10 +54,10 @@ OPENOBSERVE_PASSWORD=your-password
 | `stream` | `OPENOBSERVE_STREAM` | `default` |
 | `auth.email` | `OPENOBSERVE_EMAIL` | - |
 | `auth.password` | `OPENOBSERVE_PASSWORD` | - |
-| `batch_size` | `OPENOBSERVE_BATCH_SIZE` | `100` |
 | `timeout` | `OPENOBSERVE_TIMEOUT` | `5` |
 | `ssl_verify` | `OPENOBSERVE_SSL_VERIFY` | `true` |
-| `additional_fields` | `APP_ENV`, `APP_NAME` | `['environment', 'application']` |
+
+`timeout` and `ssl_verify` are applied to the Guzzle HTTP client that the service provider builds and injects into the OpenObserve client.
 
 ### Laravel Logging Channel Setup
 
@@ -79,7 +74,7 @@ Add the OpenObserve channel to your `config/logging.php`:
         'name' => 'openobserve',
     ],
 
-    // Optionally add openobserve to a stack channel
+    // Optionally include openobserve in a stack channel
     'stack' => [
         'driver' => 'stack',
         'channels' => ['single', 'openobserve'],
@@ -87,6 +82,8 @@ Add the OpenObserve channel to your `config/logging.php`:
     ],
 ],
 ```
+
+When `OPENOBSERVE_ENABLED=false`, the channel falls back to a `NullHandler`, so it is safe to keep wired up in non-production environments.
 
 Set the default log channel in your `.env` file:
 
@@ -105,66 +102,45 @@ use Illuminate\Support\Facades\Log;
 
 Log::info('User logged in', ['user_id' => 123]);
 Log::error('An error occurred', ['error' => $exception->getMessage()]);
-Log::warning('Warning message');
-Log::debug('Debug information', ['data' => $debugData]);
 ```
 
-### Direct Usage via Facade
+### Direct Client Access
 
-Access the OpenObserve client directly through the Facade:
+The container resolves a configured `Minhyung\OpenObserve\Client`. Use the Facade or dependency injection to access it.
 
 ```php
 use Minhyung\LaravelOpenObserve\Facades\OpenObserve;
 
-// Send a single log entry
-OpenObserve::send([
-    'level' => 'info',
-    'message' => 'User action',
-    'user_id' => 123,
-    'action' => 'purchase',
+OpenObserve::logs()->json('laravel-logs', [
+    ['level' => 'info', 'message' => 'User action', 'user_id' => 123],
 ]);
-
-// Add to batch (automatically sent when batch size is reached)
-OpenObserve::addToBatch([
-    'level' => 'info',
-    'message' => 'Event occurred',
-]);
-
-// Manually flush the batch
-OpenObserve::flush();
 ```
 
-### Dependency Injection
-
 ```php
-use Minhyung\LaravelOpenObserve\OpenObserveClient;
+use Minhyung\OpenObserve\Client;
 
 class SomeController extends Controller
 {
-    public function __construct(
-        private OpenObserveClient $openObserve
-    ) {}
+    public function __construct(private Client $openObserve)
+    {
+    }
 
     public function index()
     {
-        $this->openObserve->send([
-            'level' => 'info',
-            'message' => 'Controller executed',
-            'controller' => self::class,
+        $this->openObserve->logs()->json('laravel-logs', [
+            ['level' => 'info', 'message' => 'Controller executed'],
         ]);
     }
 }
 ```
 
-### Connection Test
+See [minhyung/openobserve](https://github.com/overworks/php-openobserve) for the full client API (search, streams, alerts, dashboards, OTLP, etc.).
 
-Test the connection to OpenObserve using the Artisan command:
+### Connection Test
 
 ```bash
 php artisan openobserve:test
 ```
-
-This will display your configuration and send a test log entry to verify connectivity.
 
 ## Testing
 

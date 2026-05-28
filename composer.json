@@ -16,12 +16,15 @@
     },
     "require": {
         "php": "^8.3",
-        "illuminate/http": "^11.0|^12.0",
-        "illuminate/support": "^11.0|^12.0"
+        "guzzlehttp/guzzle": "^7.0",
+        "illuminate/support": "^11.0|^12.0",
+        "minhyung/openobserve": "^0.1",
+        "monolog/monolog": "^3.0"
     },
     "require-dev": {
         "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "^4.0"
+        "pestphp/pest": "^4.0",
+        "php-http/mock-client": "^1.6"
     },
     "autoload": {
         "psr-4": {
@@ -48,7 +51,8 @@
     },
     "config": {
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         },
         "sort-packages": true
     },

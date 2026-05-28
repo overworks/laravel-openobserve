@@ -2,42 +2,46 @@
 
 namespace Minhyung\LaravelOpenObserve;
 
+use GuzzleHttp\Client as GuzzleClient;
 use Illuminate\Support\ServiceProvider;
 use Minhyung\LaravelOpenObserve\Console\TestConnectionCommand;
+use Minhyung\OpenObserve\Client;
 
 class OpenObserveServiceProvider extends ServiceProvider
 {
-    /**
-     * Bootstrap services.
-     */
     public function boot(): void
     {
-        // Publish configuration file
         $this->publishes([
             __DIR__.'/../config/openobserve.php' => config_path('openobserve.php'),
         ], 'openobserve-config');
     }
 
-    /**
-     * Register services.
-     */
     public function register(): void
     {
-        // Merge configuration
         $this->mergeConfigFrom(
             __DIR__.'/../config/openobserve.php',
             'openobserve'
         );
 
-        // Register OpenObserve client as singleton
-        $this->app->singleton(OpenObserveClient::class, function ($app) {
-            return new OpenObserveClient($app['config']['openobserve']);
+        $this->app->singleton(Client::class, function ($app) {
+            $config = $app['config']['openobserve'];
+
+            $guzzle = new GuzzleClient([
+                'timeout' => $config['timeout'] ?? 5,
+                'verify' => $config['ssl_verify'] ?? true,
+            ]);
+
+            return new Client(
+                baseUrl: $config['url'] ?? 'http://localhost:5080',
+                email: $config['auth']['email'] ?? '',
+                password: $config['auth']['password'] ?? '',
+                organization: $config['organization'] ?? 'default',
+                httpClient: $guzzle,
+            );
         });
 
-        // Register alias
-        $this->app->alias(OpenObserveClient::class, 'openobserve');
+        $this->app->alias(Client::class, 'openobserve');
 
-        // Register console command
         if ($this->app->runningInConsole()) {
             $this->commands([
                 TestConnectionCommand::class,

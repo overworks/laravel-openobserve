@@ -56,16 +56,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Batch Size
-    |--------------------------------------------------------------------------
-    |
-    | Number of log entries to batch before sending to OpenObserve.
-    |
-    */
-    'batch_size' => env('OPENOBSERVE_BATCH_SIZE', 100),
-
-    /*
-    |--------------------------------------------------------------------------
     | Timeout
     |--------------------------------------------------------------------------
     |
@@ -83,17 +73,4 @@ return [
     |
     */
     'ssl_verify' => env('OPENOBSERVE_SSL_VERIFY', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Additional Fields
-    |--------------------------------------------------------------------------
-    |
-    | Additional fields to include with every log entry.
-    |
-    */
-    'additional_fields' => [
-        'environment' => env('APP_ENV', 'production'),
-        'application' => env('APP_NAME', 'Laravel'),
-    ],
 ];

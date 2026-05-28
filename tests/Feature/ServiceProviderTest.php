@@ -1,27 +1,27 @@
 <?php
 
-use Minhyung\LaravelOpenObserve\OpenObserveClient;
 use Minhyung\LaravelOpenObserve\Facades\OpenObserve;
+use Minhyung\OpenObserve\Client;
 
 test('service provider registers client as singleton', function () {
-    $client = app(OpenObserveClient::class);
+    $client = app(Client::class);
 
-    expect($client)->toBeInstanceOf(OpenObserveClient::class)
-        ->and(app(OpenObserveClient::class))->toBe($client);
+    expect($client)->toBeInstanceOf(Client::class)
+        ->and(app(Client::class))->toBe($client);
 });
 
 test('client is accessible via alias', function () {
-    expect(app('openobserve'))->toBeInstanceOf(OpenObserveClient::class);
+    expect(app('openobserve'))->toBeInstanceOf(Client::class);
 });
 
 test('facade resolves to client', function () {
-    expect(OpenObserve::getFacadeRoot())->toBeInstanceOf(OpenObserveClient::class);
+    expect(OpenObserve::getFacadeRoot())->toBeInstanceOf(Client::class);
 });
 
 test('config has all required keys', function () {
     $config = config('openobserve');
 
     expect($config)->toBeArray()
-        ->toHaveKeys(['enabled', 'url', 'organization', 'stream', 'auth', 'batch_size', 'timeout', 'ssl_verify', 'additional_fields'])
+        ->toHaveKeys(['enabled', 'url', 'organization', 'stream', 'auth', 'timeout', 'ssl_verify'])
         ->and($config['auth'])->toHaveKeys(['email', 'password']);
 });

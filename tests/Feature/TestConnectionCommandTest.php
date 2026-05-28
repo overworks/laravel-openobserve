@@ -1,9 +1,24 @@
 <?php
 
-use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Psr7\Response;
+use Http\Mock\Client as MockHttpClient;
+use Minhyung\OpenObserve\Client;
+
+function bindMockClient(MockHttpClient $mock): void
+{
+    app()->singleton(Client::class, fn () => new Client(
+        baseUrl: 'http://localhost:5080',
+        email: 'test@example.com',
+        password: 'password',
+        organization: 'default',
+        httpClient: $mock,
+    ));
+}
 
 test('command displays configuration', function () {
-    Http::fake(['*' => Http::response([], 200)]);
+    $mock = new MockHttpClient();
+    $mock->addResponse(new Response(200, [], '{}'));
+    bindMockClient($mock);
 
     $this->artisan('openobserve:test')
         ->expectsOutputToContain('http://localhost:5080')
@@ -12,7 +27,9 @@ test('command displays configuration', function () {
 });
 
 test('command returns success on successful connection', function () {
-    Http::fake(['*' => Http::response([], 200)]);
+    $mock = new MockHttpClient();
+    $mock->addResponse(new Response(200, [], '{}'));
+    bindMockClient($mock);
 
     $this->artisan('openobserve:test')
         ->expectsOutputToContain('Connection successful')
@@ -20,7 +37,9 @@ test('command returns success on successful connection', function () {
 });
 
 test('command returns failure on failed connection', function () {
-    Http::fake(['*' => Http::response('error', 500)]);
+    $mock = new MockHttpClient();
+    $mock->addResponse(new Response(500, [], 'server error'));
+    bindMockClient($mock);
 
     $this->artisan('openobserve:test')
         ->expectsOutputToContain('Connection failed')
