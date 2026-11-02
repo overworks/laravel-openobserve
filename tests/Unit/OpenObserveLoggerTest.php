@@ -5,7 +5,7 @@ use Minhyung\OpenObserve\Monolog\Handler as OpenObserveMonologHandler;
 use Monolog\Logger;
 
 test('logger factory creates monolog instance', function () {
-    $factory = new OpenObserveLogger();
+    $factory = new OpenObserveLogger;
     $logger = $factory([]);
 
     expect($logger)->toBeInstanceOf(Logger::class)
@@ -13,14 +13,14 @@ test('logger factory creates monolog instance', function () {
 });
 
 test('logger factory uses custom channel name', function () {
-    $factory = new OpenObserveLogger();
+    $factory = new OpenObserveLogger;
     $logger = $factory(['name' => 'custom-channel']);
 
     expect($logger->getName())->toBe('custom-channel');
 });
 
 test('logger factory pushes openobserve handler', function () {
-    $factory = new OpenObserveLogger();
+    $factory = new OpenObserveLogger;
     $logger = $factory([]);
 
     expect($logger->getHandlers())->toHaveCount(1)

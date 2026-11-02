@@ -1,6 +1,7 @@
 <?php
 
 use Minhyung\LaravelOpenObserve\Facades\OpenObserve;
+use Minhyung\LaravelOpenObserve\OpenObserveServiceProvider;
 use Minhyung\OpenObserve\Client;
 
 test('service provider registers client as singleton', function () {
@@ -18,10 +19,15 @@ test('facade resolves to client', function () {
     expect(OpenObserve::getFacadeRoot())->toBeInstanceOf(Client::class);
 });
 
-test('config has all required keys', function () {
+test('service provider merges defaults with application configuration', function () {
+    config(['openobserve' => ['stream' => 'custom-stream']]);
+
+    (new OpenObserveServiceProvider($this->app))->register();
+
     $config = config('openobserve');
 
     expect($config)->toBeArray()
         ->toHaveKeys(['url', 'organization', 'stream', 'auth', 'timeout', 'ssl_verify'])
+        ->and($config['stream'])->toBe('custom-stream')
         ->and($config['auth'])->toHaveKeys(['email', 'password']);
 });

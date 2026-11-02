@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Facade;
 use Minhyung\OpenObserve\Client;
 
 /**
- * @see \Minhyung\OpenObserve\Client
+ * @see Client
  */
 class OpenObserve extends Facade
 {

@@ -14,8 +14,14 @@
 
 ## 요구사항
 
-- PHP 8.3 이상
-- Laravel 11.x 또는 12.x
+- PHP 8.4.1 이상
+- Laravel 13.x
+
+### 0.1에서 업그레이드
+
+예정된 0.2 릴리스부터 PHP 8.3과 Laravel 11/12 지원을 종료합니다. 패키지를 업데이트하기 전에 PHP와 Laravel을 업그레이드하세요. 기존 설정, Facade 사용법, 컨테이너 바인딩, 로그 채널 설정 방식은 유지됩니다.
+
+`openobserve:test` 명령은 테스트 로그의 실제 수집 성공을 확인해야 통과합니다. HTTP 200 응답만으로는 성공 처리하지 않습니다. 자세한 기준은 [연결 테스트](#연결-테스트)를 참고하세요.
 
 ## 설치
 
@@ -133,11 +139,29 @@ class SomeController extends Controller
 php artisan openobserve:test
 ```
 
+설정된 stream에 테스트 로그 한 건을 전송합니다. 응답의 `code`가 200이고, 대상 stream의 결과가 정확히 하나이며 정수형 건수가 `successful >= 1`, `failed: 0`일 때만 종료 코드 `0`을 반환합니다. [OpenObserve JSON 수집 응답 명세](https://openobserve.ai/docs/reference/api/ingestion/logs/json/#response)를 기준으로 검사합니다.
+
+필수 연결 설정 누락, 인증·전송 오류, 수집 실패, 결과 누락 또는 알 수 없는 응답 형식은 진단 메시지와 함께 종료 코드 `1`을 반환합니다. stream별 수집 건수가 없는 구버전·커스텀 응답도 수집 성공을 확인할 수 없으므로 실패 처리합니다. 예외 세부 정보와 원문 응답은 출력하지 않습니다.
+
 ## 테스트
 
+개발 의존성을 설치한 뒤 테스트를 실행합니다. 표준 PHPUnit 설정을 자동으로 읽으므로 설정 파일을 복사할 필요가 없습니다. 고정된 테스트 설정과 모의 HTTP 클라이언트를 사용하며, 실제 OpenObserve 서버나 인증정보는 필요하지 않습니다.
+
 ```bash
+composer install
 composer test
 ```
+
+코드 품질 검사 명령:
+
+```bash
+composer lint       # Pint 스타일 검사
+composer format     # 스타일 자동 수정
+composer analyse    # Larastan / PHPStan level 6으로 src 분석
+composer check      # Composer 검증, 스타일 검사, 정적 분석, 테스트
+```
+
+CI에서는 최신 PHP 8.4·8.5 패치와 Laravel 13 조합을 테스트하고, PHP 8.4.1에서는 설치 가능한 최소 안정 버전 의존성 조합도 검증합니다.
 
 ## 보안 취약점
 

@@ -16,8 +16,14 @@ This package provides:
 
 ## Requirements
 
-- PHP 8.3+
-- Laravel 11.x or 12.x
+- PHP 8.4.1+
+- Laravel 13.x
+
+### Upgrading from 0.1
+
+The upcoming 0.2 release drops support for PHP 8.3 and Laravel 11/12. Upgrade PHP and Laravel before updating this package. Existing configuration, Facade access, container bindings, and logging channel setup remain compatible.
+
+The `openobserve:test` command now requires confirmation that its test record was ingested. An HTTP 200 response alone is no longer sufficient; see [Connection Test](#connection-test).
 
 ## Installation
 
@@ -138,11 +144,29 @@ See [minhyung/openobserve](https://github.com/overworks/php-openobserve) for the
 php artisan openobserve:test
 ```
 
+This command sends one test log to the configured stream. It exits with code `0` only when the response has `code: 200` and exactly one result for that stream with `successful >= 1` and `failed: 0`, using integer counts. This follows the [OpenObserve JSON ingestion response](https://openobserve.ai/docs/reference/api/ingestion/logs/json/#response).
+
+Missing connection settings, authentication or transport errors, rejected records, and missing or unrecognized ingestion results return exit code `1` with a diagnostic message. Legacy or custom response formats without per-stream counts cannot confirm ingestion and also fail. Exception details and raw response bodies are not printed.
+
 ## Testing
 
+Install development dependencies, then run the tests. The standard PHPUnit configuration is discovered automatically; no configuration file needs to be copied. Tests use fixed configuration and mock HTTP clients, so no OpenObserve server or credentials are required.
+
 ```bash
+composer install
 composer test
 ```
+
+Code quality commands:
+
+```bash
+composer lint       # Check formatting with Pint
+composer format     # Apply formatting
+composer analyse    # Analyse src with Larastan / PHPStan level 6
+composer check      # Validate Composer metadata, lint, analyse, and test
+```
+
+CI tests Laravel 13 on the latest PHP 8.4 and 8.5 patches, plus PHP 8.4.1 with the lowest installable stable dependencies.
 
 ## Security Vulnerabilities
 

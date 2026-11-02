@@ -8,3 +8,7 @@ settings.local.json
 
 # PHPUnit
 phpunit.xml
+/.phpunit.cache/
+
+# PHPStan
+/.phpstan.cache/

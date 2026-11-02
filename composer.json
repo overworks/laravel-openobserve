@@ -15,15 +15,18 @@
         "source": "https://github.com/overworks/laravel-openobserve"
     },
     "require": {
-        "php": "^8.3",
+        "php": "^8.4.1",
         "guzzlehttp/guzzle": "^7.0",
-        "illuminate/support": "^11.0|^12.0",
+        "illuminate/console": "^13.0",
+        "illuminate/support": "^13.0",
         "minhyung/openobserve": "^0.1",
         "monolog/monolog": "^3.0"
     },
     "require-dev": {
-        "orchestra/testbench": "^9.0|^10.0",
-        "pestphp/pest": "^4.0",
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^11.0",
+        "pestphp/pest": "^5.0",
         "php-http/mock-client": "^1.6"
     },
     "autoload": {
@@ -37,6 +40,15 @@
         }
     },
     "scripts": {
+        "analyse": "phpstan analyse",
+        "check": [
+            "@composer validate --strict",
+            "@lint",
+            "@analyse",
+            "@test"
+        ],
+        "format": "pint",
+        "lint": "pint --test",
         "test": "pest"
     },
     "extra": {
@@ -56,6 +68,5 @@
         },
         "sort-packages": true
     },
-    "minimum-stability": "dev",
     "prefer-stable": true
 }
